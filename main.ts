@@ -652,7 +652,7 @@ namespace CForklift {
     //% subcategory="Bestemming"
     //% block="SIDE = %side"
     //% block.loc.nl="ZIJDE = %side"
-    export function setSide(side: Side) {
+    export function setSide(side: number) {
         SIDE = side
     }
 
@@ -666,7 +666,7 @@ namespace CForklift {
     //% subcategory="Bestemming"
     //% block="COLOR = %col"
     //% block.loc.nl="KLEUR = %col"
-    export function setColor(col: Color) {
+    export function setColor(col: number) {
         COLOR = col
     }
 
