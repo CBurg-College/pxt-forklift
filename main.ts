@@ -708,8 +708,8 @@ namespace CForklift {
 
     //% subcategory="Route"
     //% color="#FFCC00"
-    //% block="bring to color %col side %side"
-    //% block.loc.nl="breng naar groen A"
+    //% block="to bring to color %col side %side"
+    //% block.loc.nl="om naar kleur %col zijde %side te brengen"
     export function goRouteGreenBringA(col: number, side: number, programmableCode: () => void): void {
         switch (col) {
             case Color.Green:
