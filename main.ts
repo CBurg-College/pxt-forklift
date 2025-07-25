@@ -403,8 +403,8 @@ enum Side {
 
 CForklift.init()
 
-let PACKCOLOR = Color.None
-let PACKSIDE = Side.None
+let PALLETCOLOR = Color.None
+let PALLETSIDE = Side.None
 
 let ROUTEBUSY = false
 
@@ -435,8 +435,8 @@ let StartNextJob: jobHandler
 
 function handle(cmd: number) {
     // message from the package intake
-    PACKCOLOR = (cmd && 0x0FFF) << 4
-    PACKSIDE = (cmd && 0xF000)
+    PALLETCOLOR = (cmd && 0x0FFF) << 4
+    PALLETSIDE = (cmd && 0xF000)
 }
 
 function display() {
@@ -444,7 +444,7 @@ function display() {
 
 basic.forever(function() {
     if (ROUTEBUSY) return
-    if (!PACKCOLOR || !PACKSIDE) return
+    if (!PALLETCOLOR || !PALLETSIDE) return
     if (StartNextJob) StartNextJob()
 })
 
@@ -581,6 +581,18 @@ namespace CForklift {
                 Nezha.motorSpeed(Motor.M4, 15)
                 break;
         }
+    }
+
+    //% block="delivery side"
+    //% block.loc.nl="aflever-zijde"
+    export function palletSide(): Side {
+        return PALLETSIDE
+    }
+
+    //% block="delivery color"
+    //% block.loc.nl="aflever-kleur"
+    export function palletColor(): Color {
+        return PALLETCOLOR
     }
 
     //% color="#FFCC00"
