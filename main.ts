@@ -515,6 +515,12 @@ namespace CForklift {
         basic.showIcon(IconNames.Yes)
     }
 
+    //% block="arrived at %col"
+    //% block.loc.nl="bij %col aangekomen"
+    export function arrivedAt(col: Color): boolean {
+        return (col == ColorSensor.readColor())
+    }
+
     //% block="stop"
     //% block.loc.nl="stop"
     export function stop() {
@@ -523,12 +529,6 @@ namespace CForklift {
         Nezha.motorSpeed(Motor.M3, -15)
         Nezha.motorSpeed(Motor.M4, 15)
         basic.pause(250) // let the forklift fully come to rest
-    }
-
-    //% block="arrived at %col"
-    //% block.loc.nl="bij %col aangekomen"
-    export function arrivedAt(col: Color): boolean {
-        return (col == ColorSensor.readColor())
     }
 
     //% block="move to the %dir"
@@ -587,18 +587,6 @@ namespace CForklift {
         }
     }
 
-    //% block="delivery side"
-    //% block.loc.nl="aflever-zijde"
-    export function palletSide(): Side {
-        return SIDE
-    }
-
-    //% block="delivery color"
-    //% block.loc.nl="aflever-kleur"
-    export function palletColor(): Color {
-        return COLOR
-    }
-
     //% color="#FFCC00"
     //% block="when a new pallet is taken in"
     //% block.loc.nl="wanneer een nieuwe pallet binnenkomt"
@@ -607,9 +595,37 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
+    //% block="delivery side"
+    //% block.loc.nl="aflever-zijde"
+    export function palletSide(): Side {
+        return SIDE
+    }
+
+    //% subcategory="Bestemming"
+    //% block="delivery color"
+    //% block.loc.nl="aflever-kleur"
+    export function palletColor(): Color {
+        return COLOR
+    }
+
+    //% subcategory="Bestemming"
+    //% block="side %side"
+    //% block.loc.nl="zijde %side"
+    export function asSide(side: Side): Side {
+        return side
+    }
+
+    //% subcategory="Bestemming"
+    //% block="color %col"
+    //% block.loc.nl="kleur %col"
+    export function asColor(col: Color): Color {
+        return col
+    }
+
+    //% subcategory="Bestemming"
     //% block="return from %col side %side"
-    //% block.loc.nl="naar start vanaf %col zijde %side"
-    export function returnToStart(col: Color, side: Side) {
+    //% block.loc.nl="terug vanaf %col zijde %side"
+    export function returnToStart(col: number, side: number) {
         switch (col) {
             case Color.Green:
                 if ((side == Side.A) && RouteGreenStartA) RouteGreenStartA()
@@ -644,20 +660,6 @@ namespace CForklift {
                 if ((side == Side.B) && RouteYellowBringB) RouteYellowBringB()
                 break;
         }
-    }
-
-    //% subcategory="Bestemming"
-    //% block="SIDE equals %side"
-    //% block.loc.nl="ZIJDE is gelijk aan %side"
-    export function isSide(side: Side): boolean {
-        return (side == SIDE)
-    }
-
-    //% subcategory="Bestemming"
-    //% block="COLOR equals %col"
-    //% block.loc.nl="KLEUR is gelijk aan %col"
-    export function isColor(col: Color): boolean {
-        return (col == COLOR)
     }
 
     //% subcategory="Liftbediening"
@@ -706,50 +708,23 @@ namespace CForklift {
 
     //% subcategory="Route"
     //% color="#FFCC00"
-    //% block="bring to green A"
+    //% block="bring to color %col side %side"
     //% block.loc.nl="breng naar groen A"
-    export function goRouteGreenBringA(programmableCode: () => void): void {
-        RouteGreenBringA = programmableCode;
-    }
-
-    //% subcategory="Route"
-    //% color="#FFCC00"
-    //% block="bring to green B"
-    //% block.loc.nl="breng naar groen B"
-    export function goRouteGreenBringB(programmableCode: () => void): void {
-        RouteGreenBringB = programmableCode;
-    }
-
-    //% subcategory="Route"
-    //% color="#FFCC00"
-    //% block="bring to blue A"
-    //% block.loc.nl="breng naar blauw A"
-    export function goRouteBlueBringA(programmableCode: () => void): void {
-        RouteBlueBringA = programmableCode;
-    }
-
-    //% subcategory="Route"
-    //% color="#FFCC00"
-    //% block="bring to blue B"
-    //% block.loc.nl="breng naar blauw B"
-    export function goRouteBlueBringB(programmableCode: () => void): void {
-        RouteBlueBringB = programmableCode;
-    }
-
-    //% subcategory="Route"
-    //% color="#FFCC00"
-    //% block="bring to yellow A"
-    //% block.loc.nl="breng naar geel A"
-    export function goRouteYellowBringA(programmableCode: () => void): void {
-        RouteGreenBringA = programmableCode;
-    }
-
-    //% subcategory="Route"
-    //% color="#FFCC00"
-    //% block="bring to yellow B"
-    //% block.loc.nl="breng naar geel B"
-    export function goRouteYellowBringB(programmableCode: () => void): void {
-        RouteYellowBringB = programmableCode;
+    export function goRouteGreenBringA(col: number, side: number, programmableCode: () => void): void {
+        switch (col) {
+            case Color.Green:
+                if (side == Side.A) RouteGreenBringA = programmableCode;
+                if (side == Side.B) RouteGreenBringB = programmableCode;
+                break;
+            case Color.Blue:
+                if (side == Side.A) RouteBlueBringA = programmableCode;
+                if (side == Side.B) RouteBlueBringB = programmableCode;
+                break;
+            case Color.Yellow:
+                if (side == Side.A) RouteYellowBringA = programmableCode;
+                if (side == Side.B) RouteYellowBringB = programmableCode;
+                break;
+        }    
     }
 
     //% subcategory="Route"
