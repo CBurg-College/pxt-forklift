@@ -445,7 +445,11 @@ function display() {
 basic.forever(function() {
     if (ROUTEBUSY) return
     if (!PALLETCOLOR || !PALLETSIDE) return
-    if (StartNextJob) StartNextJob()
+    if (StartNextJob) {
+        COLOR = PALLETCOLOR
+        SIDE = PALLETSIDE
+        StartNextJob()
+    }
 })
 
 //% color="#00CC00" icon="\uf1f9"
@@ -586,13 +590,13 @@ namespace CForklift {
     //% block="delivery side"
     //% block.loc.nl="aflever-zijde"
     export function palletSide(): Side {
-        return PALLETSIDE
+        return SIDE
     }
 
     //% block="delivery color"
     //% block.loc.nl="aflever-kleur"
     export function palletColor(): Color {
-        return PALLETCOLOR
+        return COLOR
     }
 
     //% color="#FFCC00"
@@ -623,9 +627,9 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
-    //% block="bring to %col, side %side"
-    //% block.loc.nl="breng naar %col zijde %side"
-    export function bringTo(col: Color, side: Side) {
+    //% block="bring to color %col side %side"
+    //% block.loc.nl="breng naar kleur %col zijde %side"
+    export function bringTo(col: number, side: number) {
         switch (col) {
             case Color.Green:
                 if ((side == Side.A) && RouteGreenBringA) RouteGreenBringA()
@@ -650,24 +654,10 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
-    //% block="SIDE = %side"
-    //% block.loc.nl="ZIJDE = %side"
-    export function setSide(side: number) {
-        SIDE = side
-    }
-
-    //% subcategory="Bestemming"
     //% block="COLOR equals %col"
     //% block.loc.nl="KLEUR is gelijk aan %col"
     export function isColor(col: Color): boolean {
         return (col == COLOR)
-    }
-
-    //% subcategory="Bestemming"
-    //% block="COLOR = %col"
-    //% block.loc.nl="KLEUR = %col"
-    export function setColor(col: number) {
-        COLOR = col
     }
 
     //% subcategory="Liftbediening"
