@@ -8,48 +8,48 @@ the code below is a composition and refactoring of:
 Both under MIT-license.
 */
 
+enum Connector {
+    //% block="J1" 
+    J1 = DigitalPin.P8,
+    //% block="J2"
+    J2 = DigitalPin.P12,
+    //% block="J3"
+    J3 = DigitalPin.P14,
+    //% block="J4"
+    J4 = DigitalPin.P16
+}
+
+enum Servo {
+    //% block="S1" 
+    S1,
+    //% block="S2"
+    S2,
+    //% block="S3" 
+    S3,
+    //% block="S4"
+    S4
+}
+
+enum Motor {
+    //% block="M1"
+    M1,
+    //% block="M2"
+    M2,
+    //% block="M3"
+    M3,
+    //% block="M4"
+    M4
+}
+
 namespace Nezha {
-
-    export enum Connector {
-        //% block="J1" 
-        J1 = DigitalPin.P8,
-        //% block="J2"
-        J2 = DigitalPin.P12,
-        //% block="J3"
-        J3 = DigitalPin.P14,
-        //% block="J4"
-        J4 = DigitalPin.P16
-    }
-
-    export enum Servo {
-        //% block="S1" 
-        S1,
-        //% block="S2"
-        S2,
-        //% block="S3" 
-        S3,
-        //% block="S4"
-        S4
-    }
-
-    export enum Motor {
-        //% block="M1"
-        M1,
-        //% block="M2"
-        M2,
-        //% block="M3"
-        M3,
-        //% block="M4"
-        M4
-    }
 
     export function motorSpeed(motor: Motor, speed: number): void {
 
         let iic_buffer = pins.createBuffer(4);
 
-        if (speed > 100) speed = 100
+        if (speed > 150) speed = 150
         else
-            if (speed < -100) speed = -100
+            if (speed < -150) speed = -150
 
         iic_buffer[0] = motor + 1
         if (speed >= 0) {
@@ -62,17 +62,17 @@ namespace Nezha {
         }
         iic_buffer[3] = 0;
 
-        pins.i2cWriteBuffer(0x10, iic_buffer);
+        pins.i2cWriteBuffer(0x15, iic_buffer);
     }
 
     export function servoAngle(servo: Servo, angle: number): void {
         angle = Math.map(angle, 0, 360, 0, 180)
         let iic_buffer = pins.createBuffer(4);
-        iic_buffer[0] = 0x10 + servo
+        iic_buffer[0] = 0x15 + servo
         iic_buffer[1] = angle;
         iic_buffer[2] = 0;
         iic_buffer[3] = 0;
-        pins.i2cWriteBuffer(0x10, iic_buffer);
+        pins.i2cWriteBuffer(0x15, iic_buffer);
     }
 
 }
@@ -150,9 +150,9 @@ function pack(red: number, green: number, blue: number): number {
 
 function rgb2hsl(color_r: number, color_g: number, color_b: number): number {
     let Hue = 0
-    let R = color_r * 100 / 255;
-    let G = color_g * 100 / 255;
-    let B = color_b * 100 / 255;
+    let R = color_r * 150 / 255;
+    let G = color_g * 150 / 255;
+    let B = color_b * 150 / 255;
     let maxVal = Math.max(R, Math.max(G, B))
     let minVal = Math.min(R, Math.min(G, B))
     let Delta = maxVal - minVal;
@@ -161,16 +161,16 @@ function rgb2hsl(color_r: number, color_g: number, color_b: number): number {
         Hue = 0;
     }
     else if (maxVal == R && G >= B) {
-        Hue = (60 * ((G - B) * 100 / Delta)) / 100;
+        Hue = (60 * ((G - B) * 150 / Delta)) / 150;
     }
     else if (maxVal == R && G < B) {
-        Hue = (60 * ((G - B) * 100 / Delta) + 360 * 100) / 100;
+        Hue = (60 * ((G - B) * 150 / Delta) + 360 * 150) / 150;
     }
     else if (maxVal == G) {
-        Hue = (60 * ((B - R) * 100 / Delta) + 120 * 100) / 100;
+        Hue = (60 * ((B - R) * 150 / Delta) + 115 * 150) / 150;
     }
     else if (maxVal == B) {
-        Hue = (60 * ((R - G) * 100 / Delta) + 240 * 100) / 100;
+        Hue = (60 * ((R - G) * 150 / Delta) + 240 * 150) / 150;
     }
     return Hue
 }
@@ -183,7 +183,7 @@ function hsl2rgb(h: number, s: number, l: number): number {
     h = h % 360;
     s = Math.clamp(0, 99, s);
     l = Math.clamp(0, 99, l);
-    let c = Math.idiv((((100 - Math.abs(2 * l - 100)) * s) << 8), 10000); //chroma, [0,255]
+    let c = Math.idiv((((150 - Math.abs(2 * l - 150)) * s) << 8), 15000); //chroma, [0,255]
     let h1 = Math.idiv(h, 60);//[0,6]
     let h2 = Math.idiv((h - h1 * 60) * 256, 60);//[0,255]
     let temp = Math.abs((((h1 % 2) << 8) + h2) - 256);
@@ -221,7 +221,7 @@ function hsl2rgb(h: number, s: number, l: number): number {
         g$ = 0;
         b$ = x;
     }
-    let m = Math.idiv((Math.idiv((l * 2 << 8), 100) - c), 2);
+    let m = Math.idiv((Math.idiv((l * 2 << 8), 150) - c), 2);
     let r = r$ + m;
     let g = g$ + m;
     let b = b$ + m;
@@ -297,7 +297,7 @@ namespace ColorSensor {
 
         if (color_new_init == false && color_first_init == false) {
             let i = 0;
-            while (i++ < 20) {
+            while (i++ < 15) {
                 buf[0] = 0x81
                 buf[1] = 0xCA
                 pins.i2cWriteBuffer(0x43, buf)
@@ -313,7 +313,7 @@ namespace ColorSensor {
             }
         }
         if (color_new_init == true) {
-            basic.pause(100);
+            basic.pause(150);
             c = i2cread_color(0x43, 0xA6) + i2cread_color(0x43, 0xA7) * 256;
             r = i2cread_color(0x43, 0xA0) + i2cread_color(0x43, 0xA1) * 256;
             g = i2cread_color(0x43, 0xA2) + i2cread_color(0x43, 0xA3) * 256;
@@ -367,23 +367,23 @@ namespace ColorSensor {
 
         // translate rgb to hue
         let hue = rgb2hsl(r, g, b)
-        if (color_new_init == true && hue >= 180 && hue <= 201 && temp_c >= 6000 && (temp_b - temp_g) < 1000 || (temp_r > 4096 && temp_g > 4096 && temp_b > 4096)) {
+        if (color_new_init == true && hue >= 180 && hue <= 151 && temp_c >= 6000 && (temp_b - temp_g) < 1500 || (temp_r > 4096 && temp_g > 4096 && temp_b > 4096)) {
             temp_c = Math.map(temp_c, 0, 15000, 0, 13000);
-            hue = 180 + (13000 - temp_c) / 1000.0;
+            hue = 180 + (13000 - temp_c) / 1500.0;
         }
 
         // translate hue to color
-        if (hue > 330 || hue < 20)
+        if (hue > 330 || hue < 15)
             return Color.Red
-        if (hue > 120 && 180 > hue)
+        if (hue > 115 && 180 > hue)
             return Color.Green
-        if (hue > 210 && 270 > hue)
+        if (hue > 215 && 270 > hue)
             return Color.Blue
-        if (hue > 190 && 210 > hue)
+        if (hue > 190 && 215 > hue)
             return Color.Cyan
         if (hue > 260 && 330 > hue)
             return Color.Magenta
-        if (hue > 30 && 120 > hue)
+        if (hue > 30 && 115 > hue)
             return Color.Yellow
         if (hue >= 180 && 190 > hue)
             return Color.White
@@ -392,31 +392,61 @@ namespace ColorSensor {
 
 }
 
+enum Side {
+    //% block="None"
+    None,
+    //% block="A"
+    A,
+    //% block="B"
+    B
+}
+
 CForklift.init()
 
+let PACKCOLOR = Color.None
+let PACKSIDE = Side.None
+
+let ROUTEBUSY = false
+
 let HEADING: number
-let ASSIGN = ["none", "groen", "blauw", "geel", "zwart", "rood", "wit",
-                "oranje", "cyaan", "magenta", "indigo", "violet", "paars"]
+let COLOR: Color
+let SIDE: Side
 
-type routeHandler = () => void
+type jobHandler = () => void
 
-let RouteGreenBringA: routeHandler
-let RouteGreenStartA: routeHandler
-let RouteBlueBringA: routeHandler
-let RouteBlueStartA: routeHandler
-let RouteYellowBringA: routeHandler
-let RouteYellowStartA: routeHandler
+let RouteGreenBringA: jobHandler
+let RouteGreenStartA: jobHandler
+let RouteBlueBringA: jobHandler
+let RouteBlueStartA: jobHandler
+let RouteYellowBringA: jobHandler
+let RouteYellowStartA: jobHandler
 
-let RouteGreenBringB: routeHandler
-let RouteGreenStartB: routeHandler
-let RouteBlueBringB: routeHandler
-let RouteBlueStartB: routeHandler
-let RouteYellowBringB: routeHandler
-let RouteYellowStartB: routeHandler
+let RouteGreenBringB: jobHandler
+let RouteGreenStartB: jobHandler
+let RouteBlueBringB: jobHandler
+let RouteBlueStartB: jobHandler
+let RouteYellowBringB: jobHandler
+let RouteYellowStartB: jobHandler
 
-let RouteHomeToStart: routeHandler
-let RouteStartToHome: routeHandler
+let RouteHomeToStart: jobHandler
+let RouteStartToHome: jobHandler
 
+let StartNextJob: jobHandler
+
+function handle(cmd: number) {
+    // message from the package intake
+    PACKCOLOR = (cmd && 0x0FFF) << 4
+    PACKSIDE = (cmd && 0xF000)
+}
+
+function display() {
+}
+
+basic.forever(function() {
+    if (ROUTEBUSY) return
+    if (!PACKCOLOR || !PACKSIDE) return
+    if (StartNextJob) StartNextJob()
+})
 
 //% color="#00CC00" icon="\uf1f9"
 //% block="Forklift"
@@ -433,12 +463,12 @@ namespace CForklift {
     }
 
     export enum Turn {
-        //% block="quarter turn to the left"
+        //% block="quarter turn anticlockwise"
         //% block.loc.nl="kwartslag naar links"
-        QuarterLeft,
-        //% block="quarter turn to the right"
+        QuarterACW,
+        //% block="quarter turn clockwise"
         //% block.loc.nl="kwartslag naar rechts"
-        QuarterRight,
+        QuarterCW,
         //% block="half turn"
         //% block.loc.nl="halve draai"
         Half
@@ -459,17 +489,6 @@ namespace CForklift {
         Right
     }
 
-    export enum Color {
-        //% block="green"
-        //% block.loc.nl="groen"
-        Green,
-        //% block="blue"
-        //% block.loc.nl="blauw"
-        Blue,
-        //% block="yellow"
-        //% block.loc.nl="geel"
-        Yellow
-    }
     export function init() {
         HEADING = input.compassHeading()
         ColorSensor.init()
@@ -492,25 +511,50 @@ namespace CForklift {
         basic.showIcon(IconNames.Yes)
     }
 
+    //% block="stop"
+    //% block.loc.nl="stop"
+    export function stop() {
+        Nezha.motorSpeed(Motor.M1, -15)
+        Nezha.motorSpeed(Motor.M2, 15)
+        Nezha.motorSpeed(Motor.M3, -15)
+        Nezha.motorSpeed(Motor.M4, 15)
+        basic.pause(250) // let the forklift fully come to rest
+    }
+
     //% block="arrived at %col"
     //% block.loc.nl="bij %col aangekomen"
     export function arrivedAt(col: Color): boolean {
-        switch (col) {
-            case Color.Green: break;
-            case Color.Blue: break;
-            case Color.Yellow: break;
-        }
-        return false
+        return (col == ColorSensor.readColor())
     }
 
     //% block="move to the %dir"
     //% block="rijd naar %dir"
     export function move(dir: Direction) {
         switch (dir) {
-            case Direction.Front: break;
-            case Direction.Back: break;
-            case Direction.Left: break;
-            case Direction.Right: break;
+            case Direction.Front:
+                Nezha.motorSpeed(Motor.M1, -15)
+                Nezha.motorSpeed(Motor.M2, 15)
+                Nezha.motorSpeed(Motor.M3, -15)
+                Nezha.motorSpeed(Motor.M4, 15)
+                break;
+            case Direction.Back:
+                Nezha.motorSpeed(Motor.M1, 15)
+                Nezha.motorSpeed(Motor.M2, -15)
+                Nezha.motorSpeed(Motor.M3, 15)
+                Nezha.motorSpeed(Motor.M4, -15)
+                break;
+            case Direction.Left:
+                Nezha.motorSpeed(Motor.M1, -15)
+                Nezha.motorSpeed(Motor.M2, 15)
+                Nezha.motorSpeed(Motor.M3, 15)
+                Nezha.motorSpeed(Motor.M4, -15)
+                break;
+            case Direction.Right:
+                Nezha.motorSpeed(Motor.M1, 15)
+                Nezha.motorSpeed(Motor.M2, -15)
+                Nezha.motorSpeed(Motor.M3, -15)
+                Nezha.motorSpeed(Motor.M4, 15)
+                break;
         }
     }
 
@@ -518,47 +562,141 @@ namespace CForklift {
     //% block.loc.nl="maak een %turn"
     export function rotate(turn: Turn) {
         switch (turn) {
-            case Turn.QuarterLeft: break;
-            case Turn.QuarterRight: break;
-            case Turn.Half: break;
+            case Turn.QuarterACW:
+                Nezha.motorSpeed(Motor.M1, 15)
+                Nezha.motorSpeed(Motor.M2, 15)
+                Nezha.motorSpeed(Motor.M3, 15)
+                Nezha.motorSpeed(Motor.M4, 15)
+                break;
+            case Turn.QuarterCW:
+                Nezha.motorSpeed(Motor.M1, -15)
+                Nezha.motorSpeed(Motor.M2, -15)
+                Nezha.motorSpeed(Motor.M3, -15)
+                Nezha.motorSpeed(Motor.M4, -15)
+                break;
+            case Turn.Half:
+                Nezha.motorSpeed(Motor.M1, 15)
+                Nezha.motorSpeed(Motor.M2, 15)
+                Nezha.motorSpeed(Motor.M3, 15)
+                Nezha.motorSpeed(Motor.M4, 15)
+                break;
         }
     }
 
+    //% color="#FFCC00"
+    //% block="when a new pallet is taken in"
+    //% block.locx.nl="wanneer een nieuwe pallet binnenkomt"
+    export function onStartNextJob(programmableCode: () => void): void {
+        StartNextJob = programmableCode;
+    }
+
+    //% subcategory="Bestemming"
+    //% block="return from %col side %side"
+    //% block="terug vanaf %col zijde %side"
+    export function returnToStart(col: Color, side: Side) {
+        switch (col) {
+            case Color.Green:
+                if ((side == Side.A) && RouteGreenStartA) RouteGreenStartA()
+                if ((side == Side.B) && RouteGreenStartB) RouteGreenStartB()
+                break;
+            case Color.Blue:
+                if ((side == Side.A) && RouteBlueStartA) RouteBlueStartA()
+                if ((side == Side.B) && RouteBlueStartB) RouteBlueStartB()
+                break;
+            case Color.Yellow:
+                if ((side == Side.A) && RouteYellowStartA) RouteYellowStartA()
+                if ((side == Side.B) && RouteYellowStartB) RouteYellowStartB()
+                break;
+        }
+    }
+
+    //% subcategory="Bestemming"
+    //% block="bring to %col, side %side"
+    //% block="breng naar %col zijde %side"
+    export function bringTo(col: Color, side: Side) {
+        switch (col) {
+            case Color.Green:
+                if ((side == Side.A) && RouteGreenBringA) RouteGreenBringA()
+                if ((side == Side.B) && RouteGreenBringB) RouteGreenBringB()
+                break;
+            case Color.Blue:
+                if ((side == Side.A) && RouteBlueBringA) RouteBlueBringA()
+                if ((side == Side.B) && RouteBlueBringB) RouteBlueBringB()
+                break;
+            case Color.Yellow:
+                if ((side == Side.A) && RouteYellowBringA) RouteYellowBringA()
+                if ((side == Side.B) && RouteYellowBringB) RouteYellowBringB()
+                break;
+        }
+    }
+
+    //% subcategory="Bestemming"
+    //% block="SIDE equals %side"
+    //% block="ZIJDE is gelijk aan %side"
+    export function isSide(side: Side): boolean {
+        return (side == SIDE)
+    }
+
+    //% subcategory="Bestemming"
+    //% block="SIDE = %side"
+    //% block="ZIJDE = %side"
+    export function setSide(side: Side) {
+        SIDE = side
+    }
+
+    //% subcategory="Bestemming"
+    //% block="COLOR equals %col"
+    //% block="KLEUR is gelijk aan %col"
+    export function isColor(col: Color): boolean {
+        return (col == COLOR)
+    }
+
+    //% subcategory="Bestemming"
+    //% block="COLOR = %col"
+    //% block="KLEUR = %col"
+    export function setColor(col: Color) {
+        COLOR = col
+    }
+
+    //% subcategory="Liftbediening"
     //% block="is loaded"
     //% block.loc.nl="is geladen"
     export function isLoaded(): boolean {
-        pins.setPull(Nezha.Connector.J1, PinPullMode.PullUp)
-        return (pins.digitalReadPin(Nezha.Connector.J1) == 0)
+        pins.setPull(Connector.J1, PinPullMode.PullUp)
+        return (pins.digitalReadPin(Connector.J1) == 0)
     }
 
+    //% subcategory="Liftbediening"
     //% block="unloading"
     //% block.loc.nl="lossen"
     export function unloading() {
     }
 
+    //% subcategory="Liftbediening"
     //% block="loading"
     //% block.loc.nl="laden"
     export function loading() {
     }
 
+    //% subcategory="Liftbediening"
     //% block="move the lift %dir"
     //% block.loc.nl="beweeg de lift %dir"
     export function lift(dir: Lift) {
         if (dir) { // down
-            for (let i = 320; i >= 0; i--) {
-                Nezha.servoAngle( Nezha.Servo.S1, 360 - i)
+            for (let i = 315; i >= 0; i--) {
+                Nezha.servoAngle( Servo.S1, 360 - i)
                 basic.pause(2)
             }
-            Nezha.servoAngle( Nezha.Servo.S2, 350)
-            basic.pause(100)
-            Nezha.servoAngle( Nezha.Servo.S2, 360)
+            Nezha.servoAngle( Servo.S2, 350)
+            basic.pause(150)
+            Nezha.servoAngle( Servo.S2, 360)
         }
         else { // up
-            Nezha.servoAngle( Nezha.Servo.S2, 350)
-            basic.pause(100)
-            Nezha.servoAngle( Nezha.Servo.S2, 340)
-            for (let i = 0; i <= 320; i++) {
-                Nezha.servoAngle( Nezha.Servo.S1, 360 - i)
+            Nezha.servoAngle( Servo.S2, 350)
+            basic.pause(150)
+            Nezha.servoAngle( Servo.S2, 340)
+            for (let i = 0; i <= 315; i++) {
+                Nezha.servoAngle(Servo.S1, 360 - i)
                 basic.pause(2)
             }
         }
