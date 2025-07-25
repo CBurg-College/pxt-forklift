@@ -528,7 +528,7 @@ namespace CForklift {
     }
 
     //% block="move to the %dir"
-    //% block="rijd naar %dir"
+    //% block.loc.nl="rijd naar %dir"
     export function move(dir: Direction) {
         switch (dir) {
             case Direction.Front:
@@ -585,14 +585,14 @@ namespace CForklift {
 
     //% color="#FFCC00"
     //% block="when a new pallet is taken in"
-    //% block.locx.nl="wanneer een nieuwe pallet binnenkomt"
+    //% block.loc.nl="wanneer een nieuwe pallet binnenkomt"
     export function onStartNextJob(programmableCode: () => void): void {
         StartNextJob = programmableCode;
     }
 
     //% subcategory="Bestemming"
     //% block="return from %col side %side"
-    //% block="terug vanaf %col zijde %side"
+    //% block.loc.nl="naar start vanaf %col zijde %side"
     export function returnToStart(col: Color, side: Side) {
         switch (col) {
             case Color.Green:
@@ -612,7 +612,7 @@ namespace CForklift {
 
     //% subcategory="Bestemming"
     //% block="bring to %col, side %side"
-    //% block="breng naar %col zijde %side"
+    //% block.loc.nl="breng naar %col zijde %side"
     export function bringTo(col: Color, side: Side) {
         switch (col) {
             case Color.Green:
@@ -632,28 +632,28 @@ namespace CForklift {
 
     //% subcategory="Bestemming"
     //% block="SIDE equals %side"
-    //% block="ZIJDE is gelijk aan %side"
+    //% block.loc.nl="ZIJDE is gelijk aan %side"
     export function isSide(side: Side): boolean {
         return (side == SIDE)
     }
 
     //% subcategory="Bestemming"
     //% block="SIDE = %side"
-    //% block="ZIJDE = %side"
+    //% block.loc.nl="ZIJDE = %side"
     export function setSide(side: Side) {
         SIDE = side
     }
 
     //% subcategory="Bestemming"
     //% block="COLOR equals %col"
-    //% block="KLEUR is gelijk aan %col"
+    //% block.loc.nl="KLEUR is gelijk aan %col"
     export function isColor(col: Color): boolean {
         return (col == COLOR)
     }
 
     //% subcategory="Bestemming"
     //% block="COLOR = %col"
-    //% block="KLEUR = %col"
+    //% block.loc.nl="KLEUR = %col"
     export function setColor(col: Color) {
         COLOR = col
     }
@@ -705,7 +705,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to green A"
-    //% block.locx.nl="breng naar groen A"
+    //% block.loc.nl="breng naar groen A"
     export function goRouteGreenBringA(programmableCode: () => void): void {
         RouteGreenBringA = programmableCode;
     }
@@ -713,7 +713,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to green B"
-    //% block.locx.nl="breng naar groen B"
+    //% block.loc.nl="breng naar groen B"
     export function goRouteGreenBringB(programmableCode: () => void): void {
         RouteGreenBringB = programmableCode;
     }
@@ -721,7 +721,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to blue A"
-    //% block.locx.nl="breng naar blauw A"
+    //% block.loc.nl="breng naar blauw A"
     export function goRouteBlueBringA(programmableCode: () => void): void {
         RouteBlueBringA = programmableCode;
     }
@@ -729,7 +729,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to blue B"
-    //% block.locx.nl="breng naar blauw B"
+    //% block.loc.nl="breng naar blauw B"
     export function goRouteBlueBringB(programmableCode: () => void): void {
         RouteBlueBringB = programmableCode;
     }
@@ -737,7 +737,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to yellow A"
-    //% block.locx.nl="breng naar geel A"
+    //% block.loc.nl="breng naar geel A"
     export function goRouteYellowBringA(programmableCode: () => void): void {
         RouteGreenBringA = programmableCode;
     }
@@ -745,7 +745,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="bring to yellow B"
-    //% block.locx.nl="breng naar geel B"
+    //% block.loc.nl="breng naar geel B"
     export function goRouteYellowBringB(programmableCode: () => void): void {
         RouteYellowBringB = programmableCode;
     }
@@ -753,7 +753,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="from home to start"
-    //% block.locx.nl="van thuisbasis naar start"
+    //% block.loc.nl="van thuisbasis naar start"
     export function goRouteHomeToStart(programmableCode: () => void): void {
         RouteHomeToStart = programmableCode;
     }
@@ -761,7 +761,7 @@ namespace CForklift {
     //% subcategory="Route"
     //% color="#FFCC00"
     //% block="from start to home"
-    //% block.locx.nl="van start naar thuisbasis"
+    //% block.loc.nl="van start naar thuisbasis"
     export function goStartToHome(programmableCode: () => void): void {
         RouteStartToHome = programmableCode;
     }
