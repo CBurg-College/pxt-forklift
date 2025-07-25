@@ -623,8 +623,8 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
-    //% block="return from %col side %side"
-    //% block.loc.nl="terug vanaf %col zijde %side"
+    //% block="return from color %col side %side"
+    //% block.loc.nl="terug vanaf kleur %col zijde %side"
     export function returnToStart(col: number, side: number) {
         switch (col) {
             case Color.Green:
