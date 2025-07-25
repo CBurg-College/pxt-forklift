@@ -392,51 +392,58 @@ namespace ColorSensor {
 
 }
 
+enum Box {
+    //% block="Green"
+    Green = 1,
+    //% block="Blue"
+    Blue = 2,
+    //% block="Yellow"
+    Yellow = 3
+}
+
 enum Side {
-    //% block="None"
-    None,
     //% block="A"
-    A,
+    A = 1,
     //% block="B"
-    B
+    B = 2
 }
 
 CForklift.init()
 
-let PALLETCOLOR = Color.None
-let PALLETSIDE = Side.None
+let PALLETBOX = 0
+let PALLETSIDE = 0
 
 let ROUTEBUSY = false
 
 let HEADING: number
-let COLOR: Color
+let BOX: Box
 let SIDE: Side
 
 type jobHandler = () => void
 
 let RouteGreenBringA: jobHandler
-let RouteGreenStartA: jobHandler
+let RouteGreenReturnA: jobHandler
 let RouteBlueBringA: jobHandler
-let RouteBlueStartA: jobHandler
+let RouteBlueReturnA: jobHandler
 let RouteYellowBringA: jobHandler
-let RouteYellowStartA: jobHandler
+let RouteYellowReturnA: jobHandler
 
 let RouteGreenBringB: jobHandler
-let RouteGreenStartB: jobHandler
+let RouteGreenReturnB: jobHandler
 let RouteBlueBringB: jobHandler
-let RouteBlueStartB: jobHandler
+let RouteBlueReturnB: jobHandler
 let RouteYellowBringB: jobHandler
-let RouteYellowStartB: jobHandler
+let RouteYellowReturnB: jobHandler
 
 let RouteHomeToStart: jobHandler
 let RouteStartToHome: jobHandler
 
 let StartNextJob: jobHandler
 
-function handle(cmd: number) {
+function handle(dest: number) {
     // message from the package intake
-    PALLETCOLOR = (cmd && 0x0FFF) << 4
-    PALLETSIDE = (cmd && 0xF000)
+    PALLETBOX = (dest && 0x0F) << 4
+    PALLETSIDE = (dest && 0xF0)
 }
 
 function display() {
@@ -444,9 +451,9 @@ function display() {
 
 basic.forever(function() {
     if (ROUTEBUSY) return
-    if (!PALLETCOLOR || !PALLETSIDE) return
+    if (!PALLETBOX || !PALLETSIDE) return
     if (StartNextJob) {
-        COLOR = PALLETCOLOR
+        BOX = PALLETBOX
         SIDE = PALLETSIDE
         StartNextJob()
     }
@@ -602,10 +609,10 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
-    //% block="delivery color"
-    //% block.loc.nl="aflever-kleur"
-    export function palletColor(): Color {
-        return COLOR
+    //% block="delivery box"
+    //% block.loc.nl="aflever-vak"
+    export function palletBox(): Box {
+        return BOX
     }
 
     //% subcategory="Bestemming"
@@ -615,47 +622,27 @@ namespace CForklift {
         return side
     }
 
-    //% subcategory="Bestemming"
-    //% block="color %col"
-    //% block.loc.nl="kleur %col"
-    export function asColor(col: Color): Color {
-        return col
+    //% subcategory="Bestemmng"
+    //% block="box %box"
+    //% block.loc.nl="vak %box"
+    export function asColor(box: Box): Box {
+        return box
     }
 
     //% subcategory="Bestemming"
-    //% block="return from color %col side %side"
-    //% block.loc.nl="terug vanaf kleur %col zijde %side"
-    export function returnToStart(col: number, side: number) {
-        switch (col) {
-            case Color.Green:
-                if ((side == Side.A) && RouteGreenStartA) RouteGreenStartA()
-                if ((side == Side.B) && RouteGreenStartB) RouteGreenStartB()
-                break;
-            case Color.Blue:
-                if ((side == Side.A) && RouteBlueStartA) RouteBlueStartA()
-                if ((side == Side.B) && RouteBlueStartB) RouteBlueStartB()
-                break;
-            case Color.Yellow:
-                if ((side == Side.A) && RouteYellowStartA) RouteYellowStartA()
-                if ((side == Side.B) && RouteYellowStartB) RouteYellowStartB()
-                break;
-        }
-    }
-
-    //% subcategory="Bestemming"
-    //% block="bring to color %col side %side"
-    //% block.loc.nl="breng naar kleur %col zijde %side"
-    export function bringTo(col: number, side: number) {
-        switch (col) {
-            case Color.Green:
+    //% block="bring to box %box side %side"
+    //% block.loc.nl="breng naar vak %box zijde %side"
+    export function bringTo(box: number, side: number) {
+        switch (box) {
+            case Box.Green:
                 if ((side == Side.A) && RouteGreenBringA) RouteGreenBringA()
                 if ((side == Side.B) && RouteGreenBringB) RouteGreenBringB()
                 break;
-            case Color.Blue:
+            case Box.Blue:
                 if ((side == Side.A) && RouteBlueBringA) RouteBlueBringA()
                 if ((side == Side.B) && RouteBlueBringB) RouteBlueBringB()
                 break;
-            case Color.Yellow:
+            case Box.Yellow:
                 if ((side == Side.A) && RouteYellowBringA) RouteYellowBringA()
                 if ((side == Side.B) && RouteYellowBringB) RouteYellowBringB()
                 break;
@@ -708,23 +695,44 @@ namespace CForklift {
 
     //% subcategory="Route"
     //% color="#FFCC00"
-    //% block="to bring to color %col side %side"
-    //% block.loc.nl="om naar kleur %col zijde %side te brengen"
-    export function goRouteGreenBringA(col: number, side: number, programmableCode: () => void): void {
-        switch (col) {
-            case Color.Green:
+    //% block="to return from box %box side %side"
+    //% block.loc.nl="om van vak %box zijde %side terug te gaan"
+    export function goRouteReturn(box: Box, side: Side, programmableCode: () => void): void {
+        switch (box) {
+            case Box.Green:
+                if (side == Side.A) RouteGreenReturnA = programmableCode;
+                if (side == Side.B) RouteGreenReturnB = programmableCode;
+                break;
+            case Box.Blue:
+                if (side == Side.A) RouteBlueReturnA = programmableCode;
+                if (side == Side.B) RouteBlueReturnB = programmableCode;
+                break;
+            case Box.Yellow:
+                if (side == Side.A) RouteYellowReturnA = programmableCode;
+                if (side == Side.B) RouteYellowReturnB = programmableCode;
+                break;
+        }
+    }
+
+    //% subcategory="Route"
+    //% color="#FFCC00"
+    //% block="to bring to box %box side %side"
+    //% block.loc.nl="om naar vak %box zijde %side te brengen"
+    export function goRouteBring(box: Box, side: Side, programmableCode: () => void): void {
+        switch (box) {
+            case Box.Green:
                 if (side == Side.A) RouteGreenBringA = programmableCode;
                 if (side == Side.B) RouteGreenBringB = programmableCode;
                 break;
-            case Color.Blue:
+            case Box.Blue:
                 if (side == Side.A) RouteBlueBringA = programmableCode;
                 if (side == Side.B) RouteBlueBringB = programmableCode;
                 break;
-            case Color.Yellow:
+            case Box.Yellow:
                 if (side == Side.A) RouteYellowBringA = programmableCode;
                 if (side == Side.B) RouteYellowBringB = programmableCode;
                 break;
-        }    
+        }
     }
 
     //% subcategory="Route"
