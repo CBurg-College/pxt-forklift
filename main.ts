@@ -525,36 +525,6 @@ namespace CForklift {
         basic.showIcon(IconNames.Yes)
     }
 
-    //% block="wait until in the %col box"
-    //% block.loc.nl="wacht tot in het %col vak"
-    export function waitBox(box: Box) {
-        let col: Color
-        switch (box) {
-            case Box.Green: col = Color.Green; break;
-            case Box.Blue: col = Color.Blue; break;
-            case Box.Yellow: col = Color.Yellow; break;
-        }
-        while (ColorSensor.readColor() != col) { basic.pause(1) }
-    }
-
-    //% block="wait until in the blue box"
-    //% block.loc.nl="wacht tot in het blauwe vak"
-    export function waitBlueBox() {
-        while (ColorSensor.readColor() != Color.Blue) { basic.pause(1) }
-    }
-
-    //% block="wait until in the yellow box"
-    //% block.loc.nl="wacht tot in het gele vak"
-    export function waitYellowBox() {
-        while (ColorSensor.readColor() != Color.Yellow) { basic.pause(1) }
-    }
-
-    //% block="wait until at a crossing"
-    //% block.loc.nl="wacht tot op een kruispunt"
-    export function waitCrossing() {
-        while (ColorSensor.readColor() != Color.Orange) { basic.pause(1) }
-    }
-
     //% block="stop"
     //% block.loc.nl="stop"
     export function stop() {
@@ -563,6 +533,26 @@ namespace CForklift {
         Nezha.motorSpeed(Motor.M3, -15)
         Nezha.motorSpeed(Motor.M4, 15)
         basic.pause(250) // let the forklift fully come to rest
+    }
+
+    //% block="stop in the %col box"
+    //% block.loc.nl="stop in vak %col"
+    export function waitBox(box: Box) {
+        let col: Color
+        switch (box) {
+            case Box.Green: col = Color.Green; break;
+            case Box.Blue: col = Color.Blue; break;
+            case Box.Yellow: col = Color.Yellow; break;
+        }
+        while (ColorSensor.readColor() != col) { basic.pause(1) }
+        stop()
+    }
+
+    //% block="stop at a crossing"
+    //% block.loc.nl="stop op een kruispunt"
+    export function waitCrossing() {
+        while (ColorSensor.readColor() != Color.Orange) { basic.pause(1) }
+        stop()
     }
 
     //% block="move to the %dir"
