@@ -686,6 +686,21 @@ namespace CForklift {
         }
     }
 
+
+    //% subcategory="Bestemming"
+    //% block="follow the route from start to home"
+    //% block.loc.nl="volg de route van start naar de thuisbasis"
+    export function startToHome() {
+        if (RouteStartToHome) RouteStartToHome()
+    }
+
+    //% subcategory="Bestemming"
+    //% block="follow the route from home to start"
+    //% block.loc.nl="volg de route van de thuisbasis naar start"
+    export function homeToStart() {
+        if (RouteHomeToStart) RouteHomeToStart()
+    }
+
     //% subcategory="Liftbediening"
     //% block="has load"
     //% block.loc.nl="heeft lading"
