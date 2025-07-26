@@ -62,17 +62,17 @@ namespace Nezha {
         }
         iic_buffer[3] = 0;
 
-        pins.i2cWriteBuffer(0x15, iic_buffer);
+        pins.i2cWriteBuffer(0x10, iic_buffer);
     }
 
     export function servoAngle(servo: Servo, angle: number): void {
         angle = Math.map(angle, 0, 360, 0, 180)
         let iic_buffer = pins.createBuffer(4);
-        iic_buffer[0] = 0x15 + servo
+        iic_buffer[0] = 0x10 + servo
         iic_buffer[1] = angle;
         iic_buffer[2] = 0;
         iic_buffer[3] = 0;
-        pins.i2cWriteBuffer(0x15, iic_buffer);
+        pins.i2cWriteBuffer(0x10, iic_buffer);
     }
 
 }
