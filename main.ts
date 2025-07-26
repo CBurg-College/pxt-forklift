@@ -522,10 +522,34 @@ namespace CForklift {
         basic.showIcon(IconNames.Yes)
     }
 
-    //% block="arrived at %col"
-    //% block.loc.nl="bij %col aangekomen"
-    export function arrivedAt(col: Color): boolean {
-        return (col == ColorSensor.readColor())
+    //% block="wait until in the %col box"
+    //% block.loc.nl="wacht tot in het %col vak"
+    export function waitBox(box: Box) {
+        let col: Color
+        switch (box) {
+            case Box.Green: col = Color.Green; break;
+            case Box.Blue: col = Color.Blue; break;
+            case Box.Yellow: col = Color.Yellow; break;
+        }
+        while (ColorSensor.readColor() != col) { basic.pause(1) }
+    }
+
+    //% block="wait until in the blue box"
+    //% block.loc.nl="wacht tot in het blauwe vak"
+    export function waitBlueBox() {
+        while (ColorSensor.readColor() != Color.Blue) { basic.pause(1) }
+    }
+
+    //% block="wait until in the yellow box"
+    //% block.loc.nl="wacht tot in het gele vak"
+    export function waitYellowBox() {
+        while (ColorSensor.readColor() != Color.Yellow) { basic.pause(1) }
+    }
+
+    //% block="wait until at a crossing"
+    //% block.loc.nl="wacht tot op een kruispunt"
+    export function waitCrossing() {
+        while (ColorSensor.readColor() != Color.Orange) { basic.pause(1) }
     }
 
     //% block="stop"
