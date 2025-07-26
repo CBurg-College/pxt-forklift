@@ -675,11 +675,12 @@ namespace CForklift {
     }
 
     //% subcategory="Liftbediening"
-    //% block="wait until the lift has load"
-    //% block.loc.nl="wacht tot de lift lading heeft"
+    //% block="stop when the lift has load"
+    //% block.loc.nl="stop als de lift lading heeft"
     export function waitLoaded() {
         pins.setPull(Connector.J1, PinPullMode.PullUp)
-        while (pins.digitalReadPin(Connector.J1) == 1) {basic.pause(1)}
+        while (pins.digitalReadPin(Connector.J1) == 1) { basic.pause(1) }
+        stop()
     }
 
     //% subcategory="Liftbediening"
