@@ -647,8 +647,28 @@ namespace CForklift {
     }
 
     //% subcategory="Bestemming"
-    //% block="bring to box %box side %side"
-    //% block.loc.nl="breng naar vak %box zijde %side"
+    //% block="follow the route returning from box %box side %side"
+    //% block.loc.nl="volg de route terug van vak %box zijde %side"
+    export function returnFrom(box: number, side: number) {
+        switch (box) {
+            case Box.Green:
+                if ((side == Side.A) && RouteGreenReturnA) RouteGreenReturnA()
+                if ((side == Side.B) && RouteGreenReturnB) RouteGreenReturnB()
+                break;
+            case Box.Blue:
+                if ((side == Side.A) && RouteBlueReturnA) RouteBlueReturnA()
+                if ((side == Side.B) && RouteBlueReturnB) RouteBlueReturnB()
+                break;
+            case Box.Yellow:
+                if ((side == Side.A) && RouteYellowReturnA) RouteYellowReturnA()
+                if ((side == Side.B) && RouteYellowReturnB) RouteYellowReturnB()
+                break;
+        }
+    }
+
+    //% subcategory="Bestemming"
+    //% block="follow the route to box %box side %side"
+    //% block.loc.nl="volg de route naar vak %box zijde %side"
     export function bringTo(box: number, side: number) {
         switch (box) {
             case Box.Green:
@@ -707,10 +727,10 @@ namespace CForklift {
         }
     }
 
-    //% subcategory="Route"
+    //% subcategory="Routes"
     //% color="#FFCC00"
-    //% block="to return from box %box side %side"
-    //% block.loc.nl="om van vak %box zijde %side terug te gaan"
+    //% block="the route returning from box %box side %side"
+    //% block.loc.nl="de route terug van vak %box zijde %side"
     export function goRouteReturn(box: Box, side: Side, programmableCode: () => void): void {
         switch (box) {
             case Box.Green:
@@ -728,10 +748,10 @@ namespace CForklift {
         }
     }
 
-    //% subcategory="Route"
+    //% subcategory="Routes"
     //% color="#FFCC00"
-    //% block="to bring to box %box side %side"
-    //% block.loc.nl="om naar vak %box zijde %side te brengen"
+    //% block="the route to box %box side %side"
+    //% block.loc.nl="de route naar vak %box zijde %side"
     export function goRouteBring(box: Box, side: Side, programmableCode: () => void): void {
         switch (box) {
             case Box.Green:
@@ -749,18 +769,18 @@ namespace CForklift {
         }
     }
 
-    //% subcategory="Route"
+    //% subcategory="Routes"
     //% color="#FFCC00"
-    //% block="from home to start"
-    //% block.loc.nl="van thuisbasis naar start"
+    //% block="the route from home to start"
+    //% block.loc.nl="de route van de thuisbasis naar start"
     export function goRouteHomeToStart(programmableCode: () => void): void {
         RouteHomeToStart = programmableCode;
     }
 
-    //% subcategory="Route"
+    //% subcategory="Routes"
     //% color="#FFCC00"
-    //% block="from start to home"
-    //% block.loc.nl="van start naar thuisbasis"
+    //% block="the route from start to home"
+    //% block.loc.nl="de route van start naar de thuisbasis"
     export function goStartToHome(programmableCode: () => void): void {
         RouteStartToHome = programmableCode;
     }
