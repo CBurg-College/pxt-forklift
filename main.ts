@@ -622,7 +622,7 @@ namespace CForklift {
         return side
     }
 
-    //% subcategory="Bestemmng"
+    //% subcategory="Bestemming"
     //% block="box %box"
     //% block.loc.nl="vak %box"
     export function asColor(box: Box): Box {
@@ -650,23 +650,19 @@ namespace CForklift {
     }
 
     //% subcategory="Liftbediening"
-    //% block="is loaded"
-    //% block.loc.nl="is geladen"
+    //% block="has load"
+    //% block.loc.nl="heeft lading"
     export function isLoaded(): boolean {
         pins.setPull(Connector.J1, PinPullMode.PullUp)
         return (pins.digitalReadPin(Connector.J1) == 0)
     }
 
     //% subcategory="Liftbediening"
-    //% block="unloading"
-    //% block.loc.nl="lossen"
-    export function unloading() {
-    }
-
-    //% subcategory="Liftbediening"
-    //% block="loading"
-    //% block.loc.nl="laden"
-    export function loading() {
+    //% block="wait until the lift has load"
+    //% block.loc.nl="wacht tot de lift lading heeft"
+    export function waitLoaded() {
+        pins.setPull(Connector.J1, PinPullMode.PullUp)
+        while (pins.digitalReadPin(Connector.J1) == 1) {basic.pause(1)}
     }
 
     //% subcategory="Liftbediening"
