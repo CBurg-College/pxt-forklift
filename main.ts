@@ -393,11 +393,14 @@ namespace ColorSensor {
 }
 
 enum Box {
-    //% block="Green"
+    //% block="green"
+    //% block.loc.nl="groen"
     Green = 1,
-    //% block="Blue"
+    //% block="blue"
+    //% block.loc.nl="blauw"
     Blue = 2,
-    //% block="Yellow"
+    //% block="yellow"
+    //% block.loc.nl="geel"
     Yellow = 3
 }
 
