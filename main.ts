@@ -418,7 +418,6 @@ let PALLETSIDE = 0
 
 let ROUTEBUSY = false
 
-let HEADING: number
 let BOX: Box
 let SIDE: Side
 
@@ -504,7 +503,6 @@ namespace CForklift {
     }
 
     export function init() {
-        HEADING = input.compassHeading()
         ColorSensor.init()
         basic.showLeds(`
             . . . . .
@@ -519,20 +517,19 @@ namespace CForklift {
         basic.showIcon(IconNames.Square)
         basic.pause(500)
         basic.clearScreen()
-        CForklift.lift(CForklift.Lift.Up)
+        CForklift.liftUp()
         basic.pause(500)
-        CForklift.lift(CForklift.Lift.Down)
+        CForklift.liftDown()
         basic.showIcon(IconNames.Yes)
     }
 
     //% block="stop"
     //% block.loc.nl="stop"
     export function stop() {
-        Nezha.motorSpeed(Motor.M1, -15)
-        Nezha.motorSpeed(Motor.M2, 15)
-        Nezha.motorSpeed(Motor.M3, -15)
-        Nezha.motorSpeed(Motor.M4, 15)
-        basic.pause(250) // let the forklift fully come to rest
+        Nezha.motorSpeed(Motor.M1, 0)
+        Nezha.motorSpeed(Motor.M2, 0)
+        Nezha.motorSpeed(Motor.M3, 0)
+        Nezha.motorSpeed(Motor.M4, 0)
     }
 
     //% block="stop in the %col box"
@@ -589,24 +586,16 @@ namespace CForklift {
     //% block="make a %turn"
     //% block.loc.nl="maak een %turn"
     export function rotate(turn: Turn) {
+        let speed: number
+        let heading: number
+        let dh: number
+
         switch (turn) {
             case Turn.QuarterACW:
-                Nezha.motorSpeed(Motor.M1, 15)
-                Nezha.motorSpeed(Motor.M2, 15)
-                Nezha.motorSpeed(Motor.M3, 15)
-                Nezha.motorSpeed(Motor.M4, 15)
                 break;
             case Turn.QuarterCW:
-                Nezha.motorSpeed(Motor.M1, -15)
-                Nezha.motorSpeed(Motor.M2, -15)
-                Nezha.motorSpeed(Motor.M3, -15)
-                Nezha.motorSpeed(Motor.M4, -15)
                 break;
             case Turn.Half:
-                Nezha.motorSpeed(Motor.M1, 15)
-                Nezha.motorSpeed(Motor.M2, 15)
-                Nezha.motorSpeed(Motor.M3, 15)
-                Nezha.motorSpeed(Motor.M4, 15)
                 break;
         }
     }
@@ -710,35 +699,28 @@ namespace CForklift {
     }
 
     //% subcategory="Liftbediening"
-    //% block="stop when the lift has load"
-    //% block.loc.nl="stop als de lift lading heeft"
-    export function waitLoaded() {
-        pins.setPull(Connector.J1, PinPullMode.PullUp)
-        while (pins.digitalReadPin(Connector.J1) == 1) { basic.pause(1) }
-        stop()
+    //% block="move the lift down"
+    //% block.loc.nl="beweeg de lift omlaag"
+    export function liftDown() {
+        for (let i = 315; i >= 0; i--) {
+            Nezha.servoAngle(Servo.S1, 360 - i)
+            basic.pause(2)
+        }
+        Nezha.servoAngle(Servo.S2, 350)
+        basic.pause(150)
+        Nezha.servoAngle(Servo.S2, 360)
     }
 
     //% subcategory="Liftbediening"
-    //% block="move the lift %dir"
-    //% block.loc.nl="beweeg de lift %dir"
-    export function lift(dir: Lift) {
-        if (dir) { // down
-            for (let i = 315; i >= 0; i--) {
-                Nezha.servoAngle( Servo.S1, 360 - i)
-                basic.pause(2)
-            }
-            Nezha.servoAngle( Servo.S2, 350)
-            basic.pause(150)
-            Nezha.servoAngle( Servo.S2, 360)
-        }
-        else { // up
-            Nezha.servoAngle( Servo.S2, 350)
-            basic.pause(150)
-            Nezha.servoAngle( Servo.S2, 340)
-            for (let i = 0; i <= 315; i++) {
-                Nezha.servoAngle(Servo.S1, 360 - i)
-                basic.pause(2)
-            }
+    //% block="move the lift up"
+    //% block.loc.nl="beweeg de lift omhoog"
+    export function liftUp() {
+        Nezha.servoAngle(Servo.S2, 350)
+        basic.pause(150)
+        Nezha.servoAngle(Servo.S2, 340)
+        for (let i = 0; i <= 315; i++) {
+            Nezha.servoAngle(Servo.S1, 360 - i)
+            basic.pause(2)
         }
     }
 
