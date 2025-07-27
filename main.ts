@@ -283,7 +283,7 @@ namespace ColorSensor {
         i2cwrite_color(APDS9960_ADDR, APDS9960_ENABLE, tmp);
     }
 
-    export function readColor(): Color {
+    export function read(): Color {
         let buf = pins.createBuffer(2)
         let c = 0
         let r = 0
@@ -390,6 +390,36 @@ namespace ColorSensor {
         return Color.Black
     }
 
+}
+
+enum Tracking {
+    //% block="◌ ◌"
+    None,
+    //% block="● ◌"
+    Left,
+    //% block="◌ ●"
+    Right,
+    //% block="● ●"
+    Both
+}
+
+namespace TrackSensor {
+
+    export function read(): Tracking {
+        let lpin = DigitalPin.P13
+        let rpin = DigitalPin.P14
+        pins.setPull(lpin, PinPullMode.PullUp)
+        pins.setPull(rpin, PinPullMode.PullUp)
+        let lsensor = pins.digitalReadPin(lpin)
+        let rsensor = pins.digitalReadPin(rpin)
+        if (lsensor == 0 && rsensor == 0)
+            return Tracking.Both
+        if (lsensor == 0 && rsensor == 1)
+            return Tracking.Left
+        if (lsensor == 1 && rsensor == 0)
+            return Tracking.Right
+        return Tracking.None
+    }
 }
 
 enum Box {
@@ -532,8 +562,8 @@ namespace CForklift {
         Nezha.motorSpeed(Motor.M4, 0)
     }
 
-    //% block="stop in the %col box"
-    //% block.loc.nl="stop in vak %col"
+    //% block="stop in the %box box"
+    //% block.loc.nl="stop in vak %box"
     export function waitBox(box: Box) {
         let col: Color
         switch (box) {
@@ -541,14 +571,14 @@ namespace CForklift {
             case Box.Blue: col = Color.Blue; break;
             case Box.Yellow: col = Color.Yellow; break;
         }
-        while (ColorSensor.readColor() != col) { basic.pause(1) }
+        while (ColorSensor.read() != col) { basic.pause(1) }
         stop()
     }
 
     //% block="stop at a crossing"
     //% block.loc.nl="stop op een kruispunt"
     export function waitCrossing() {
-        while (ColorSensor.readColor() != Color.Orange) { basic.pause(1) }
+        while (ColorSensor.read() != Color.Orange) { basic.pause(1) }
         stop()
     }
 
@@ -590,14 +620,30 @@ namespace CForklift {
         let heading: number
         let dh: number
 
-        switch (turn) {
-            case Turn.QuarterACW:
-                break;
-            case Turn.QuarterCW:
-                break;
-            case Turn.Half:
-                break;
+        if (turn == Turn.QuarterCW) {
+            Nezha.motorSpeed(Motor.M1, 15)
+            Nezha.motorSpeed(Motor.M2, 15)
+            Nezha.motorSpeed(Motor.M3, 15)
+            Nezha.motorSpeed(Motor.M4, 15)
         }
+        else {
+            Nezha.motorSpeed(Motor.M1, -15)
+            Nezha.motorSpeed(Motor.M2, -15)
+            Nezha.motorSpeed(Motor.M3, -15)
+            Nezha.motorSpeed(Motor.M4, -15)
+        }
+
+        while (TrackSensor.read() == Tracking.Both) { basic.pause(1) }
+        while (TrackSensor.read() != Tracking.Both) { basic.pause(1) }
+        if (turn == Turn.Half) {
+            while (TrackSensor.read() == Tracking.Both) { basic.pause(1) }
+            while (TrackSensor.read() != Tracking.Both) { basic.pause(1) }
+        }
+
+        Nezha.motorSpeed(Motor.M1, 0)
+        Nezha.motorSpeed(Motor.M2, 0)
+        Nezha.motorSpeed(Motor.M3, 0)
+        Nezha.motorSpeed(Motor.M4, 0)
     }
 
     //% color="#FFCC00"
