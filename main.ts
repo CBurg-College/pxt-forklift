@@ -441,7 +441,7 @@ enum Side {
     B = 2
 }
 
-CForklift.init()
+//CForklift.init()
 
 let PALLETBOX = 0
 let PALLETSIDE = 0
@@ -828,3 +828,9 @@ namespace CForklift {
         RouteStartToHome = programmableCode;
     }
 }
+
+basic.pause(2000)
+Nezha.motorSpeed(Motor.M1, -20)
+Nezha.motorSpeed(Motor.M2, 15)
+Nezha.motorSpeed(Motor.M3, -20)
+Nezha.motorSpeed(Motor.M4, 15)
