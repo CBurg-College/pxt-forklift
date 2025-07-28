@@ -1,4 +1,3 @@
-
 enum Box {
     //% block="green"
     //% block.loc.nl="groen"
@@ -10,7 +9,6 @@ enum Box {
     //% block.loc.nl="geel"
     Yellow = 3
 }
-
 enum Side {
     //% block="A"
     A = 1,
@@ -18,12 +16,10 @@ enum Side {
     B = 2
 }
 
+let PALLETBOX = Box.Green
+let PALLETSIDE = Side.A
+
 CForklift.init()
-
-let PALLETBOX = 0
-let PALLETSIDE = 0
-
-let ROUTEBUSY = false
 
 let BOX: Box
 let SIDE: Side
@@ -34,41 +30,21 @@ let RouteBlueBringA: handler
 let RouteBlueReturnA: handler
 let RouteYellowBringA: handler
 let RouteYellowReturnA: handler
-
 let RouteGreenBringB: handler
 let RouteGreenReturnB: handler
 let RouteBlueBringB: handler
 let RouteBlueReturnB: handler
 let RouteYellowBringB: handler
 let RouteYellowReturnB: handler
-
 let RouteHomeToStart: handler
 let RouteStartToHome: handler
-
 let StartNextJob: handler
 
 function handle(dest: number) {
-    // message from the package intake
     PALLETBOX = (dest && 0x0F) << 4
     PALLETSIDE = (dest && 0xF0)
 }
 
-function display() {
-}
-
-basic.forever(function() {
-    if (ROUTEBUSY) return
-    if (!PALLETBOX || !PALLETSIDE) return
-    if (StartNextJob) {
-        BOX = PALLETBOX
-        SIDE = PALLETSIDE
-        StartNextJob()
-    }
-})
-
-//% color="#00CC00" icon="\uf1f9"
-//% block="Forklift"
-//% block.loc.nl="Heftruck"
 namespace CForklift {
 
     export enum Lift {
@@ -264,8 +240,8 @@ namespace CForklift {
         Nezha.servoAngle(Servo.S2, 350)
         basic.pause(150)
         Nezha.servoAngle(Servo.S2, 340)
-        for (let i = 0; i <= 315; i++) {
-            Nezha.servoAngle(Servo.S1, 360 - i)
+        for (let j = 0; j <= 315; j++) {
+            Nezha.servoAngle(Servo.S1, 360 - j)
             basic.pause(2)
         }
     }
@@ -328,3 +304,17 @@ namespace CForklift {
         RouteStartToHome = programmableCode;
     }
 }
+basic.forever(function () {
+    let ROUTEBUSY = 0
+    if (ROUTEBUSY) {
+        return
+    }
+    if (!(PALLETBOX) || !(PALLETSIDE)) {
+        return
+    }
+    if (StartNextJob) {
+        BOX = PALLETBOX
+        SIDE = PALLETSIDE
+        StartNextJob()
+    }
+})
