@@ -5,7 +5,10 @@
         "core": "*",
         "radio": "*",
         "microphone": "*",
-        "pxt-soccer": "github:CBurg-College/pxt-soccer#82903049454842bb3f1433d4700908921d5d5b36"
+        "pxt-general": "github:cburg-college/pxt-general#a07337d4139187576bff9c572778decb571919cb",
+        "pxt-colorsensor": "github:cburg-college/pxt-colorsensor#c6f957d1eeb75d762934345480beb3be0781bd1c",
+        "pxt-mecanum": "github:cburg-college/pxt-mecanum#219d419c7bddaadcf0611e97e1b662e3b2051b2d",
+        "pxt-switchsensor": "github:CBurg-College/pxt-switchsensor#57d64f24ef3b91aaaac4b555ad18a1accf973a7d"
     },
     "files": [
         "main.blocks",
