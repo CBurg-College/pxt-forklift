@@ -65,6 +65,15 @@ namespace Nezha {
         pins.i2cWriteBuffer(0x10, iic_buffer);
     }
 
+    export function setMotor(frontleft: number, frontright: number, backleft: number, backright: number) {
+        // supply positive values to obtain 'forward' spinning
+        // (M1 and M3 are constructed in reverse)
+        Nezha.motorSpeed(Motor.M4, frontleft)   // front left
+        Nezha.motorSpeed(Motor.M3, -frontright) // front right
+        Nezha.motorSpeed(Motor.M2, backleft)    // back left
+        Nezha.motorSpeed(Motor.M1, -backright)  // back right
+    }
+
     export function servoAngle(servo: Servo, angle: number): void {
         angle = Math.map(angle, 0, 360, 0, 180)
         let iic_buffer = pins.createBuffer(4);
@@ -441,7 +450,7 @@ enum Side {
     B = 2
 }
 
-//CForklift.init()
+CForklift.init()
 
 let PALLETBOX = 0
 let PALLETSIDE = 0
@@ -518,16 +527,16 @@ namespace CForklift {
     }
 
     export enum Direction {
-        //% block="front"
+        //% block="forward"
         //% block.loc.nl="voren"
-        Front,
-        //% block="back"
+        Forward,
+        //% block="backward"
         //% block.loc.nl="achteren"
-        Back,
-        //% block="left"
+        Backward,
+        //% block="to the left"
         //% block.loc.nl="links"
         Left,
-        //% block="right"
+        //% block="to the right"
         //% block.loc.nl="rechts"
         Right
     }
@@ -556,10 +565,7 @@ namespace CForklift {
     //% block="stop"
     //% block.loc.nl="stop"
     export function stop() {
-        Nezha.motorSpeed(Motor.M1, 0)
-        Nezha.motorSpeed(Motor.M2, 0)
-        Nezha.motorSpeed(Motor.M3, 0)
-        Nezha.motorSpeed(Motor.M4, 0)
+        Nezha.setMotor(0, 0, 0, 0)
     }
 
     //% block="stop in the %box box"
@@ -582,34 +588,14 @@ namespace CForklift {
         stop()
     }
 
-    //% block="move to the %dir"
+    //% block="move %dir"
     //% block.loc.nl="rijd naar %dir"
     export function move(dir: Direction) {
         switch (dir) {
-            case Direction.Front:
-                Nezha.motorSpeed(Motor.M1, -15)
-                Nezha.motorSpeed(Motor.M2, 15)
-                Nezha.motorSpeed(Motor.M3, -15)
-                Nezha.motorSpeed(Motor.M4, 15)
-                break;
-            case Direction.Back:
-                Nezha.motorSpeed(Motor.M1, 15)
-                Nezha.motorSpeed(Motor.M2, -15)
-                Nezha.motorSpeed(Motor.M3, 15)
-                Nezha.motorSpeed(Motor.M4, -15)
-                break;
-            case Direction.Left:
-                Nezha.motorSpeed(Motor.M1, -15)
-                Nezha.motorSpeed(Motor.M2, 15)
-                Nezha.motorSpeed(Motor.M3, 15)
-                Nezha.motorSpeed(Motor.M4, -15)
-                break;
-            case Direction.Right:
-                Nezha.motorSpeed(Motor.M1, 15)
-                Nezha.motorSpeed(Motor.M2, -15)
-                Nezha.motorSpeed(Motor.M3, -15)
-                Nezha.motorSpeed(Motor.M4, 15)
-                break;
+            case Direction.Forward: Nezha.setMotor(17, 15, 15, 15); break;
+            case Direction.Backward: Nezha.setMotor(-17, -15, -15, -15); break;
+            case Direction.Left: Nezha.setMotor(-18, 18, 13, -15); break;
+            case Direction.Right: Nezha.setMotor(22, -18, -15, 15); break;
         }
     }
 
@@ -620,30 +606,14 @@ namespace CForklift {
         let heading: number
         let dh: number
 
-        if (turn == Turn.QuarterCW) {
-            Nezha.motorSpeed(Motor.M1, 15)
-            Nezha.motorSpeed(Motor.M2, 15)
-            Nezha.motorSpeed(Motor.M3, 15)
-            Nezha.motorSpeed(Motor.M4, 15)
-        }
-        else {
-            Nezha.motorSpeed(Motor.M1, -15)
-            Nezha.motorSpeed(Motor.M2, -15)
-            Nezha.motorSpeed(Motor.M3, -15)
-            Nezha.motorSpeed(Motor.M4, -15)
-        }
-
-        while (TrackSensor.read() == Tracking.Both) { basic.pause(1) }
-        while (TrackSensor.read() != Tracking.Both) { basic.pause(1) }
-        if (turn == Turn.Half) {
-            while (TrackSensor.read() == Tracking.Both) { basic.pause(1) }
-            while (TrackSensor.read() != Tracking.Both) { basic.pause(1) }
-        }
-
-        Nezha.motorSpeed(Motor.M1, 0)
-        Nezha.motorSpeed(Motor.M2, 0)
-        Nezha.motorSpeed(Motor.M3, 0)
-        Nezha.motorSpeed(Motor.M4, 0)
+        if (turn == Turn.QuarterCW)
+            // clockwise
+            Nezha.setMotor(15, -15, 15, -15)
+        else
+            // anticlockwise
+            Nezha.setMotor(-15, 15, -15, 15)
+        basic.pause(700)
+        Nezha.setMotor(0, 0, 0, 0)
     }
 
     //% color="#FFCC00"
@@ -828,9 +798,3 @@ namespace CForklift {
         RouteStartToHome = programmableCode;
     }
 }
-
-basic.pause(2000)
-Nezha.motorSpeed(Motor.M1, -20)
-Nezha.motorSpeed(Motor.M2, 15)
-Nezha.motorSpeed(Motor.M3, -20)
-Nezha.motorSpeed(Motor.M4, 15)
