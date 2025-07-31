@@ -6,7 +6,7 @@
         "radio": "*",
         "microphone": "*",
         "pxt-general": "github:cburg-college/pxt-general#a07337d4139187576bff9c572778decb571919cb",
-        "pxt-colorsensor": "github:cburg-college/pxt-colorsensor",
+        "pxt-colorsensor": "github:cburg-college/pxt-colorsensor#981e9feac4eb8bd8cc2d8809c738ece931dead30",
         "pxt-mecanum": "github:cburg-college/pxt-mecanum#5da76b5d04477d38aa695fd54878c5a530bf8874",
         "pxt-switchsensor": "github:cburg-college/pxt-switchsensor#d5128ed2f71cb571867212d1b8c521445120544f"
     },
@@ -19,7 +19,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "8.0.11",
+        "target": "8.0.13",
         "targetId": "microbit"
     },
     "supportedTargets": [
